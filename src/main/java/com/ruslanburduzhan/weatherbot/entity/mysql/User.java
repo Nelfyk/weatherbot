@@ -8,8 +8,6 @@ import java.sql.Timestamp;
 @Entity(name = "users")
 @Data
 public class User {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     @Id
     private long chatId;
     private String firstName;

@@ -130,10 +130,10 @@ public class TelegrambotService extends TelegramLongPollingBot {
             var location = weather.getLocation();
             sendMessage(chatId, location.getName() +
 //                    " - " + location.getRegion() +
-                    " - " + location.getCountry() + "\n<strong>" +
-                    "\nтемп.: " + current.getTempC() + " °C" +
-                    "\nдата: " + location.getLocaltime().substring(0, 10) +
-                    "\nвремя: " + location.getLocaltime().substring(11) + "</strong>");
+                    " - " + location.getCountry() + "\n" +
+                    "<strong>\nтемп.:</strong> " + current.getTempC() + " °C" +
+                    "<strong>\nдата:</strong> " + location.getLocaltime().substring(0, 10) +
+                    "<strong>\nвремя:</strong> " + location.getLocaltime().substring(11));
             saveUserRequestHistory(chatId, city);
         } else sendMessage(chatId, "Некорректное название города");
     }
@@ -177,14 +177,17 @@ public class TelegrambotService extends TelegramLongPollingBot {
         if (user.getLastName() == null) name = user.getFirstName();
         else name = user.getFirstName() + user.getLastName();
 
-        sendMessage(purposeId, "Chat-id: \n    <strong>" + user.getChatId() +
-                "</strong>\nName: \n    <strong>" + name +
-                "</strong>\nRegistered_at: \n    <strong>" + user.getRegisteredAt().toString().substring(0,16) +
-                "</strong>\nUser_name: \n    <strong>" + user.getUserName() +
-                "</strong>\nMsg_counter: \n    <strong>" + user.getMsgCounter() +
-                "</strong>");
-//        Request request = requestRepository.findLastRequests()
-//        sendWeatherMsg(purposeId,);
+        sendMessage(purposeId, "<strong>Chat-id:</strong> \n    " + user.getChatId() +
+                "<strong>\nName:</strong> \n    " + name +
+                "<strong>\nRegistered_at:</strong> \n    " + user.getRegisteredAt().toString().substring(0,16) +
+                "<strong>\nUser_name:</strong> \n    " + user.getUserName() +
+                "<strong>\nMsg_counter:</strong> \n    " + user.getMsgCounter());
+        List<Request> requestList = requestRepository.findLastRequests(chatId);
+        if(requestList.size()>0){
+            StringBuilder stringBuilder = new StringBuilder("<strong>Последние корректные запросы:</strong>\n");
+            requestList.forEach(e-> stringBuilder.append(e.getCity()+"\n"));
+            sendMessage(purposeId,stringBuilder.toString());
+        }
     }
 
     private void showMenu(long chatId, Message msg) {
