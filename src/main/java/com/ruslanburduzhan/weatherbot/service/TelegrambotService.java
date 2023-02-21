@@ -92,7 +92,8 @@ public class TelegrambotService extends TelegramLongPollingBot {
     }
 
     private void saveUserRequestHistory(long chatId, String request) {
-        requestRepository.save(new Request(chatId, request, new Timestamp(System.currentTimeMillis())));
+        if (requestRepository.findByCity(request).isEmpty())
+            requestRepository.save(new Request(chatId, request, new Timestamp(System.currentTimeMillis())));
     }
 
     private void registerUser(Message msg) {
@@ -143,7 +144,6 @@ public class TelegrambotService extends TelegramLongPollingBot {
         message.setChatId(chatId);
         message.setText("Введите название города:");
         List<Request> requestList = requestRepository.findLastRequests(chatId);
-        System.out.println(requestList);
         if (requestList.size() > 0) {
             message.setText("Введите название города\nили выберите из списка:");
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
@@ -177,16 +177,18 @@ public class TelegrambotService extends TelegramLongPollingBot {
         if (user.getLastName() == null) name = user.getFirstName();
         else name = user.getFirstName() + user.getLastName();
 
-        sendMessage(purposeId, "<strong>Chat-id:</strong> \n    " + user.getChatId() +
+        sendMessage(purposeId,
                 "<strong>\nName:</strong> \n    " + name +
-                "<strong>\nRegistered_at:</strong> \n    " + user.getRegisteredAt().toString().substring(0,16) +
-                "<strong>\nUser_name:</strong> \n    " + user.getUserName() +
-                "<strong>\nMsg_counter:</strong> \n    " + user.getMsgCounter());
+                        "<strong>\nUser_name:</strong> \n    " + user.getUserName() +
+                        "<strong>\nMsg_counter:</strong> \n    " + user.getMsgCounter() +
+                        "<strong>\nChat-id:</strong> \n    " + user.getChatId() +
+                        "<strong>\nRegistered_at:</strong> \n    " +
+                        user.getRegisteredAt().toString().substring(0, 16));
         List<Request> requestList = requestRepository.findLastRequests(chatId);
-        if(requestList.size()>0){
+        if (requestList.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder("<strong>Последние корректные запросы:</strong>\n");
-            requestList.forEach(e-> stringBuilder.append(e.getCity()+"\n"));
-            sendMessage(purposeId,stringBuilder.toString());
+            requestList.forEach(e -> stringBuilder.append(e.getCity() + "\n"));
+            sendMessage(purposeId, stringBuilder.toString());
         }
     }
 

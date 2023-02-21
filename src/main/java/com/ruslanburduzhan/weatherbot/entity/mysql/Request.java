@@ -8,8 +8,10 @@ import java.sql.Timestamp;
 @Entity(name = "requests")
 @Data
 public class Request {
-    private long chatId;
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int id;
+    private long chatId;
     private String city;
     private Timestamp requestTime;
 
