@@ -1,4 +1,4 @@
-package com.ruslaburduzhan.weatherbot.entity;
+package com.ruslanburduzhan.weatherbot.entity.api;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

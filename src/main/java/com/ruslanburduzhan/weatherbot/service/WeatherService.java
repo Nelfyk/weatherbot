@@ -1,7 +1,7 @@
-package com.ruslaburduzhan.weatherbot.service;
+package com.ruslanburduzhan.weatherbot.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ruslaburduzhan.weatherbot.entity.Weather;
+import com.ruslanburduzhan.weatherbot.entity.api.Weather;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

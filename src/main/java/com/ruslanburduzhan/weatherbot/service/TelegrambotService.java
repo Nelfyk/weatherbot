@@ -1,7 +1,9 @@
-package com.ruslaburduzhan.weatherbot.service;
+package com.ruslanburduzhan.weatherbot.service;
 
-import com.ruslaburduzhan.weatherbot.entity.Telegrambot;
-import com.ruslaburduzhan.weatherbot.entity.Weather;
+import com.ruslanburduzhan.weatherbot.entity.api.Telegrambot;
+import com.ruslanburduzhan.weatherbot.entity.mysql.User;
+import com.ruslanburduzhan.weatherbot.entity.api.Weather;
+import com.ruslanburduzhan.weatherbot.model.WeatherbotRepository;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -15,23 +17,34 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMar
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Stack;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 public class TelegrambotService extends TelegramLongPollingBot {
 
-    Telegrambot telegrambot;
-    WeatherService weatherService;
-    Stack<String> commands;
+    private final Telegrambot telegrambot;
+    private final WeatherService weatherService;
+    private final WeatherbotRepository repository;
+    private Queue<String> queue;
 
-    public TelegrambotService(Telegrambot telegrambot, WeatherService weatherService) {
+    public TelegrambotService(Telegrambot telegrambot, WeatherService weatherService,WeatherbotRepository repository) {
         this.telegrambot = telegrambot;
         this.weatherService = weatherService;
-        commands = new Stack<>();
+        this.repository = repository;
+        queue = new ArrayDeque<>();
         createCommandList();
+    }
+
+    private void createCommandList() {
+        List<BotCommand> botCommandList = new ArrayList<>();
+        botCommandList.add(new BotCommand("/start", "показать меню"));
+        botCommandList.add(new BotCommand("/weather", "Получить погоду по введённому городу"));
+        try {
+            execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -51,14 +64,33 @@ public class TelegrambotService extends TelegramLongPollingBot {
             long chatId = msg.getChatId();
             String msgText = msg.getText();
             if (msgText.equals("/start")) {
-                menu(chatId, msg);
+                registerUser(msg);
+                showMenu(chatId, msg);
+                queue.clear();
             } else if (msgText.equals("/weather") || msgText.equals("Получить погоду")) {
-                commands.push("/weather");
+                queue.add("/weather");
                 sendMessage(chatId, "Введите название города");
-            } else if (Objects.equals(commands.peek(), "/weather")) {
+            } else if (Objects.equals(queue.peek(), "/weather")) {
                 sendWeatherMsg(msg);
             }
+            msgCounterIncr(chatId);
         }
+    }
+
+    private void registerUser(Message msg) {
+        if (repository.findByChatId(msg.getChatId()).isEmpty()) {
+            var chat = msg.getChat();
+            repository.save(
+                    new User(msg.getChatId(), chat.getFirstName(), chat.getLastName(),
+                            chat.getUserName(), new Timestamp(System.currentTimeMillis()),
+                            1));
+        }
+    }
+
+    private void msgCounterIncr(long chatId){
+        User user = repository.findByChatId(chatId).get();
+        user.setMsgCounter(user.getMsgCounter()+1);
+        repository.save(user);
     }
 
     private void sendMessage(long chatId, String textToSend) {
@@ -73,33 +105,22 @@ public class TelegrambotService extends TelegramLongPollingBot {
         }
     }
 
-    private void createCommandList() {
-        List<BotCommand> botCommandList = new ArrayList<>();
-        botCommandList.add(new BotCommand("/start", "показать меню"));
-        botCommandList.add(new BotCommand("/weather", "Получить погоду по введённому городу"));
-        try {
-            execute(new SetMyCommands(botCommandList, new BotCommandScopeDefault(), null));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void sendWeatherMsg(Message msg) {
         String msgText = msg.getText();
         Weather weather = weatherService.getWeatherApi(msgText);
         if (weather.getError() == null) {
             var current = weather.getCurrent();
             var location = weather.getLocation();
-            sendMessage(msg.getChatId(), location.getName()  +
+            sendMessage(msg.getChatId(), location.getName() +
                     " - " + location.getRegion() +
                     " - " + location.getCountry() + "\n" +
                     "\n*темп.: " + current.getTempC() + " °C" +
-                    "\nдата: " + location.getLocaltime().substring(0,10) +
+                    "\nдата: " + location.getLocaltime().substring(0, 10) +
                     "\nвремя: " + location.getLocaltime().substring(11) + "*");
         } else sendMessage(msg.getChatId(), "Некорректное название города");
     }
 
-    private void menu(long chatId, Message msg) {
+    private void showMenu(long chatId, Message msg) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
@@ -107,6 +128,8 @@ public class TelegrambotService extends TelegramLongPollingBot {
         row.add("Обо мне");
         keyboardRowList.add(row);
         keyboardMarkup.setKeyboard(keyboardRowList);
+        keyboardMarkup.setResizeKeyboard(true);
+        keyboardMarkup.setOneTimeKeyboard(true);
 
         SendMessage message = new SendMessage();
 

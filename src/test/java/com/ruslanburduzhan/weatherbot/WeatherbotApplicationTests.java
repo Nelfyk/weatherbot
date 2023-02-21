@@ -1,4 +1,4 @@
-package com.ruslaburduzhan.weatherbot;
+package com.ruslanburduzhan.weatherbot;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,4 +1,4 @@
-package com.ruslaburduzhan.weatherbot.service;
+package com.ruslanburduzhan.weatherbot.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
