@@ -1,16 +1,24 @@
 package com.ruslanburduzhan.weatherbot.entity.mysql;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
-@Entity(name = "user_request")
+import java.sql.Timestamp;
+
+@Entity(name = "requests")
 @Data
 public class Request {
+    private long chatId;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     private String city;
+    private Timestamp requestTime;
+
+    public Request() {
+    }
+
+    public Request(long chatId, String city, Timestamp requestTime) {
+        this.chatId = chatId;
+        this.city = city;
+        this.requestTime = requestTime;
+    }
 }

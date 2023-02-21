@@ -5,20 +5,18 @@ import lombok.Data;
 
 import java.sql.Timestamp;
 
-@Entity(name = "Users")
+@Entity(name = "users")
 @Data
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Id
     private long chatId;
     private String firstName;
     private String lastName;
     private String userName;
     private Timestamp registeredAt;
     private int msgCounter;
-    @OneToOne(cascade = CascadeType.ALL)
-    private Request request;
 
     public User() {
     }
