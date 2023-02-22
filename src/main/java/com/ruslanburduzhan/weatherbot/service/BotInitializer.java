@@ -23,4 +23,9 @@ public class BotInitializer {
             e.getStackTrace();
         }
     }
+//    @EventListener(ApplicationReadyEvent.class)
+//    public void runAfterStartup() {
+//        System.out.println("Yaaah, I am running........");
+//    }
+
 }

@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "location",
-    "current"
+        "location",
+        "current"
 })
 public class Weather {
 
@@ -21,15 +21,15 @@ public class Weather {
 
     private String Error;
 
-    public String getError() {
-        return Error;
-    }
-
     public Weather() {
     }
 
     public Weather(String error) {
         Error = error;
+    }
+
+    public String getError() {
+        return Error;
     }
 
     @JsonProperty("location")
@@ -58,14 +58,14 @@ public class Weather {
         sb.append(Weather.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("location");
         sb.append('=');
-        sb.append(((this.location == null)?"<null>":this.location));
+        sb.append(((this.location == null) ? "<null>" : this.location));
         sb.append(',');
         sb.append("current");
         sb.append('=');
-        sb.append(((this.current == null)?"<null>":this.current));
+        sb.append(((this.current == null) ? "<null>" : this.current));
         sb.append(',');
-        if (sb.charAt((sb.length()- 1)) == ',') {
-            sb.setCharAt((sb.length()- 1), ']');
+        if (sb.charAt((sb.length() - 1)) == ',') {
+            sb.setCharAt((sb.length() - 1), ']');
         } else {
             sb.append(']');
         }
@@ -75,8 +75,8 @@ public class Weather {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.location == null)? 0 :this.location.hashCode()));
-        result = ((result* 31)+((this.current == null)? 0 :this.current.hashCode()));
+        result = ((result * 31) + ((this.location == null) ? 0 : this.location.hashCode()));
+        result = ((result * 31) + ((this.current == null) ? 0 : this.current.hashCode()));
         return result;
     }
 
@@ -89,7 +89,7 @@ public class Weather {
             return false;
         }
         Weather rhs = ((Weather) other);
-        return (((this.location == rhs.location)||((this.location!= null)&&this.location.equals(rhs.location)))&&((this.current == rhs.current)||((this.current!= null)&&this.current.equals(rhs.current))));
+        return (((this.location == rhs.location) || ((this.location != null) && this.location.equals(rhs.location))) && ((this.current == rhs.current) || ((this.current != null) && this.current.equals(rhs.current))));
     }
 
 }

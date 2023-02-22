@@ -1,9 +1,10 @@
 package com.ruslanburduzhan.weatherbot.service;
 
-import com.ruslanburduzhan.weatherbot.entity.api.Telegrambot;
+import com.ruslanburduzhan.weatherbot.entity.Telegrambot;
+import com.ruslanburduzhan.weatherbot.entity.api.Location;
+import com.ruslanburduzhan.weatherbot.entity.api.Weather;
 import com.ruslanburduzhan.weatherbot.entity.mysql.Request;
 import com.ruslanburduzhan.weatherbot.entity.mysql.User;
-import com.ruslanburduzhan.weatherbot.entity.api.Weather;
 import com.ruslanburduzhan.weatherbot.repository.RequestRepository;
 import com.ruslanburduzhan.weatherbot.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class TelegrambotService extends TelegramLongPollingBot {
     private final UserRepository userRepository;
     private final RequestRepository requestRepository;
     private Queue<String> queue;
+    private Map<String, String> menuMap = new HashMap<>();
 
     public TelegrambotService(Telegrambot telegrambot, WeatherService weatherService,
                               UserRepository userRepository, RequestRepository requestRepository) {
@@ -41,6 +43,7 @@ public class TelegrambotService extends TelegramLongPollingBot {
         this.requestRepository = requestRepository;
         queue = new ArrayDeque<>();
         createCommandList();
+        createMenuMap();
     }
 
     private void createCommandList() {
@@ -51,6 +54,15 @@ public class TelegrambotService extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
+    }
+
+    private void createMenuMap() {
+        menuMap.put("weather", "Получить погоду \uD83C\uDF26");
+        menuMap.put("myInfo", "Обо мне \uD83D\uDC40");
+        menuMap.put("settings", "Настройки ⚙️");
+        menuMap.put("deleteRequests", "Удалить мои запросы ❌");
+        menuMap.put("aboutBot", "О боте \uD83E\uDD16");
+        menuMap.put("back", "Назад ⬅️");
     }
 
     @Override
@@ -73,14 +85,26 @@ public class TelegrambotService extends TelegramLongPollingBot {
                 registerUser(msg);
                 showMenu(chatId, msg);
                 queue.clear();
-            } else if (msgText.equals("Получить погоду")) {
+
+            } else if (msgText.equals(menuMap.get("weather"))) {
                 queue.add("/weather");
                 getWeather(chatId);
-            } else if (Objects.equals(queue.peek(), "/weather")) {
+            } else if (msgText.equals(menuMap.get("myInfo"))) {
+                sendInfo(chatId, chatId);
+                queue.clear();
+            } else if (msgText.equals(menuMap.get("settings"))) {
+                settings(chatId);
+                queue.clear();
+            } else if (msgText.equals(menuMap.get("aboutBot"))) {
+                sendAboutBot(chatId);
+                queue.clear();
+            }else if (Objects.equals(queue.peek(), "/weather")) {
                 sendWeatherMsg(chatId, msgText);
                 queue.clear();
-            } else if (msgText.equals("Обо мне")) {
-                sendInfo(chatId, chatId);
+            } else if (msgText.equals(menuMap.get("deleteRequests"))) {
+                deleteRequests(chatId);
+            } else if (msgText.equals(menuMap.get("back"))) {
+                showMenu(chatId, msg);
             }
             msgCounterIncr(chatId);
         } else if (update.hasCallbackQuery() && !queue.isEmpty()) {
@@ -94,6 +118,12 @@ public class TelegrambotService extends TelegramLongPollingBot {
     private void saveUserRequestHistory(long chatId, String request) {
         if (requestRepository.findByCity(request).isEmpty())
             requestRepository.save(new Request(chatId, request, new Timestamp(System.currentTimeMillis())));
+        else {
+            var req = requestRepository.findByCity(request).get();
+            req.setRequestTime(new Timestamp(System.currentTimeMillis()));
+            req.setCounter(req.getCounter() + 1);
+            requestRepository.save(req);
+        }
     }
 
     private void registerUser(Message msg) {
@@ -112,6 +142,12 @@ public class TelegrambotService extends TelegramLongPollingBot {
         userRepository.save(user);
     }
 
+    private void deleteRequests(long chatId) {
+        List<Request> requestList = requestRepository.getAllByChatId(chatId);
+        requestList.forEach(e -> requestRepository.deleteById(e.getId()));
+        sendMessage(chatId, "Ваша история запросов удалена.");
+    }
+
     private void sendMessage(long chatId, String textToSend) {
         SendMessage message = new SendMessage();
         message.setParseMode(ParseMode.HTML);
@@ -124,18 +160,43 @@ public class TelegrambotService extends TelegramLongPollingBot {
         }
     }
 
+    private void sendMessageWithKeyboardMarkup(long chatId, String text, ReplyKeyboardMarkup keyboardMarkup) {
+        keyboardMarkup.setResizeKeyboard(true);
+        keyboardMarkup.setOneTimeKeyboard(true);
+        SendMessage message = new SendMessage();
+        message.setReplyMarkup(keyboardMarkup);
+        message.setChatId(chatId);
+        message.setText(text);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void sendWeatherMsg(long chatId, String city) {
         Weather weather = weatherService.getWeatherApi(city);
         if (weather.getError() == null) {
             var current = weather.getCurrent();
             var location = weather.getLocation();
+//            sendMessage(chatId, location.getName() +
+//                    " - " + location.getCountry() + "\n" +
+//                    "<strong>\n\uD83C\uDF21</strong> " + current.getTempC() + " °C" +
+//                    "<strong>\n:🤔</strong> " + current.getFeelslikeC() + " °C" +
+//                    "<strong>\n\uD83D\uDCA7</strong> " + current.getHumidity() + "%" +
+//                    "<strong>\n\uD83D\uDCA8</strong> " + current.getWindMps() + " м/c" +
+//                    "<strong>\n\uD83D\uDCC5</strong> " + location.getLocaltime().substring(0, 10) +
+//                    "<strong>\n⌚</strong> " + location.getLocaltime().substring(11));
             sendMessage(chatId, location.getName() +
-//                    " - " + location.getRegion() +
-                    " - " + location.getCountry() + "\n" +
-                    "<strong>\nтемп.:</strong> " + current.getTempC() + " °C" +
-                    "<strong>\nдата:</strong> " + location.getLocaltime().substring(0, 10) +
-                    "<strong>\nвремя:</strong> " + location.getLocaltime().substring(11));
-            saveUserRequestHistory(chatId, city);
+                    " - " + location.getCountry() +
+                    "<strong>\n" + location.getLocaltime().substring(11) + " - "  + current.getCondition().getText() + "</strong>" +
+                    "<strong>\n    " + current.getTempC() + " °C</strong>\n" +
+                    "<strong>\nПо ощущениям:</strong>\n    " + current.getFeelslikeC() + " °C" +
+                    "<strong>\nВероятность осадков:</strong>\n    " + current.getHumidity() + "%" +
+                    "<strong>\nВлажность:</strong>\n    " + current.getHumidity() + "%" +
+                    "<strong>\nВетер:</strong>\n    " + current.getWindMps() + " м/c" +
+                    "<strong>\nДата:</strong>\n    " + location.getLocaltime().substring(0, 10));
+            saveUserRequestHistory(chatId, location.getName());
         } else sendMessage(chatId, "Некорректное название города");
     }
 
@@ -144,7 +205,7 @@ public class TelegrambotService extends TelegramLongPollingBot {
         message.setChatId(chatId);
         message.setText("Введите название города:");
         List<Request> requestList = requestRepository.findLastRequests(chatId);
-        if (requestList.size() > 0) {
+        if (!requestList.isEmpty()) {
             message.setText("Введите название города\nили выберите из списка:");
             InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
             List<List<InlineKeyboardButton>> rowsInLine = new ArrayList<>();
@@ -185,34 +246,44 @@ public class TelegrambotService extends TelegramLongPollingBot {
                         "<strong>\nRegistered_at:</strong> \n    " +
                         user.getRegisteredAt().toString().substring(0, 16));
         List<Request> requestList = requestRepository.findLastRequests(chatId);
-        if (requestList.size() > 0) {
+        if (!requestList.isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder("<strong>Последние корректные запросы:</strong>\n");
-            requestList.forEach(e -> stringBuilder.append(e.getCity() + "\n"));
+            requestList.forEach(e -> stringBuilder.append("<strong>" + e.getCity() + "</strong> - " +
+                    e.getCounter() + " раз(а)\n"));
             sendMessage(purposeId, stringBuilder.toString());
         }
+    }
+
+    private void sendAboutBot(long chatId){
+        sendMessage(chatId,"Backend разработан на java ☕\n Стек: \n- Spring Boot" +
+                "\n- Spring Data\n- Maven\n- Api погоды - weatherapi.com \n- БД MySQL\n- Docker\nРазработчик - Burdzuhan Ruslan \uD83D\uDC68\u200D\uD83D\uDCBB");
     }
 
     private void showMenu(long chatId, Message msg) {
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> keyboardRowList = new ArrayList<>();
         KeyboardRow row = new KeyboardRow();
-        row.add("Получить погоду");
-        row.add("Обо мне");
+        KeyboardRow row2 = new KeyboardRow();
+        row.add(menuMap.get("weather"));
+        row.add(menuMap.get("myInfo"));
         keyboardRowList.add(row);
+        row2.add(menuMap.get("settings"));
+        keyboardRowList.add(row2);
         keyboardMarkup.setKeyboard(keyboardRowList);
-        keyboardMarkup.setResizeKeyboard(true);
-        keyboardMarkup.setOneTimeKeyboard(true);
+        sendMessageWithKeyboardMarkup(chatId, "Меню:", keyboardMarkup);
+    }
 
-        SendMessage message = new SendMessage();
-
-        message.setReplyMarkup(keyboardMarkup);
-
-        message.setChatId(chatId);
-        message.setText("Меню:");
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+    private void settings(long chatId) {
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboardRowList = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardRow row2 = new KeyboardRow();
+        row.add(menuMap.get("deleteRequests"));
+        row.add(menuMap.get("aboutBot"));
+        keyboardRowList.add(row);
+        row2.add(menuMap.get("back"));
+        keyboardRowList.add(row2);
+        keyboardMarkup.setKeyboard(keyboardRowList);
+        sendMessageWithKeyboardMarkup(chatId, "Настройки:", keyboardMarkup);
     }
 }

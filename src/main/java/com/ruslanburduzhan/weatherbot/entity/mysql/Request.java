@@ -14,6 +14,7 @@ public class Request {
     private long chatId;
     private String city;
     private Timestamp requestTime;
+    private int counter;
 
     public Request() {
     }
@@ -22,5 +23,6 @@ public class Request {
         this.chatId = chatId;
         this.city = city;
         this.requestTime = requestTime;
+        this.counter = 1;
     }
 }
