@@ -9,14 +9,14 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "name",
-    "region",
-    "country",
-    "lat",
-    "lon",
-    "tz_id",
-    "localtime_epoch",
-    "localtime"
+        "name",
+        "region",
+        "country",
+        "lat",
+        "lon",
+        "tz_id",
+        "localtime_epoch",
+        "localtime"
 })
 public class Location {
 
@@ -123,38 +123,38 @@ public class Location {
         sb.append(Location.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("name");
         sb.append('=');
-        sb.append(((this.name == null)?"<null>":this.name));
+        sb.append(((this.name == null) ? "<null>" : this.name));
         sb.append(',');
         sb.append("region");
         sb.append('=');
-        sb.append(((this.region == null)?"<null>":this.region));
+        sb.append(((this.region == null) ? "<null>" : this.region));
         sb.append(',');
         sb.append("country");
         sb.append('=');
-        sb.append(((this.country == null)?"<null>":this.country));
+        sb.append(((this.country == null) ? "<null>" : this.country));
         sb.append(',');
         sb.append("lat");
         sb.append('=');
-        sb.append(((this.lat == null)?"<null>":this.lat));
+        sb.append(((this.lat == null) ? "<null>" : this.lat));
         sb.append(',');
         sb.append("lon");
         sb.append('=');
-        sb.append(((this.lon == null)?"<null>":this.lon));
+        sb.append(((this.lon == null) ? "<null>" : this.lon));
         sb.append(',');
         sb.append("tzId");
         sb.append('=');
-        sb.append(((this.tzId == null)?"<null>":this.tzId));
+        sb.append(((this.tzId == null) ? "<null>" : this.tzId));
         sb.append(',');
         sb.append("localtimeEpoch");
         sb.append('=');
-        sb.append(((this.localtimeEpoch == null)?"<null>":this.localtimeEpoch));
+        sb.append(((this.localtimeEpoch == null) ? "<null>" : this.localtimeEpoch));
         sb.append(',');
         sb.append("localtime");
         sb.append('=');
-        sb.append(((this.localtime == null)?"<null>":this.localtime));
+        sb.append(((this.localtime == null) ? "<null>" : this.localtime));
         sb.append(',');
-        if (sb.charAt((sb.length()- 1)) == ',') {
-            sb.setCharAt((sb.length()- 1), ']');
+        if (sb.charAt((sb.length() - 1)) == ',') {
+            sb.setCharAt((sb.length() - 1), ']');
         } else {
             sb.append(']');
         }
@@ -164,14 +164,14 @@ public class Location {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.localtime == null)? 0 :this.localtime.hashCode()));
-        result = ((result* 31)+((this.country == null)? 0 :this.country.hashCode()));
-        result = ((result* 31)+((this.tzId == null)? 0 :this.tzId.hashCode()));
-        result = ((result* 31)+((this.localtimeEpoch == null)? 0 :this.localtimeEpoch.hashCode()));
-        result = ((result* 31)+((this.name == null)? 0 :this.name.hashCode()));
-        result = ((result* 31)+((this.lon == null)? 0 :this.lon.hashCode()));
-        result = ((result* 31)+((this.region == null)? 0 :this.region.hashCode()));
-        result = ((result* 31)+((this.lat == null)? 0 :this.lat.hashCode()));
+        result = ((result * 31) + ((this.localtime == null) ? 0 : this.localtime.hashCode()));
+        result = ((result * 31) + ((this.country == null) ? 0 : this.country.hashCode()));
+        result = ((result * 31) + ((this.tzId == null) ? 0 : this.tzId.hashCode()));
+        result = ((result * 31) + ((this.localtimeEpoch == null) ? 0 : this.localtimeEpoch.hashCode()));
+        result = ((result * 31) + ((this.name == null) ? 0 : this.name.hashCode()));
+        result = ((result * 31) + ((this.lon == null) ? 0 : this.lon.hashCode()));
+        result = ((result * 31) + ((this.region == null) ? 0 : this.region.hashCode()));
+        result = ((result * 31) + ((this.lat == null) ? 0 : this.lat.hashCode()));
         return result;
     }
 
@@ -184,7 +184,7 @@ public class Location {
             return false;
         }
         Location rhs = ((Location) other);
-        return (((((((((this.localtime == rhs.localtime)||((this.localtime!= null)&&this.localtime.equals(rhs.localtime)))&&((this.country == rhs.country)||((this.country!= null)&&this.country.equals(rhs.country))))&&((this.tzId == rhs.tzId)||((this.tzId!= null)&&this.tzId.equals(rhs.tzId))))&&((this.localtimeEpoch == rhs.localtimeEpoch)||((this.localtimeEpoch!= null)&&this.localtimeEpoch.equals(rhs.localtimeEpoch))))&&((this.name == rhs.name)||((this.name!= null)&&this.name.equals(rhs.name))))&&((this.lon == rhs.lon)||((this.lon!= null)&&this.lon.equals(rhs.lon))))&&((this.region == rhs.region)||((this.region!= null)&&this.region.equals(rhs.region))))&&((this.lat == rhs.lat)||((this.lat!= null)&&this.lat.equals(rhs.lat))));
+        return (((((((((this.localtime == rhs.localtime) || ((this.localtime != null) && this.localtime.equals(rhs.localtime))) && ((this.country == rhs.country) || ((this.country != null) && this.country.equals(rhs.country)))) && ((this.tzId == rhs.tzId) || ((this.tzId != null) && this.tzId.equals(rhs.tzId)))) && ((this.localtimeEpoch == rhs.localtimeEpoch) || ((this.localtimeEpoch != null) && this.localtimeEpoch.equals(rhs.localtimeEpoch)))) && ((this.name == rhs.name) || ((this.name != null) && this.name.equals(rhs.name)))) && ((this.lon == rhs.lon) || ((this.lon != null) && this.lon.equals(rhs.lon)))) && ((this.region == rhs.region) || ((this.region != null) && this.region.equals(rhs.region)))) && ((this.lat == rhs.lat) || ((this.lat != null) && this.lat.equals(rhs.lat))));
     }
 
 }

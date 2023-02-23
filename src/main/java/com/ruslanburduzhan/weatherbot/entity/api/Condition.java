@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
-    "text",
-    "icon",
-    "code"
+        "text",
+        "icon",
+        "code"
 })
 public class Condition {
 
@@ -58,18 +58,18 @@ public class Condition {
         sb.append(Condition.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("text");
         sb.append('=');
-        sb.append(((this.text == null)?"<null>":this.text));
+        sb.append(((this.text == null) ? "<null>" : this.text));
         sb.append(',');
         sb.append("icon");
         sb.append('=');
-        sb.append(((this.icon == null)?"<null>":this.icon));
+        sb.append(((this.icon == null) ? "<null>" : this.icon));
         sb.append(',');
         sb.append("code");
         sb.append('=');
-        sb.append(((this.code == null)?"<null>":this.code));
+        sb.append(((this.code == null) ? "<null>" : this.code));
         sb.append(',');
-        if (sb.charAt((sb.length()- 1)) == ',') {
-            sb.setCharAt((sb.length()- 1), ']');
+        if (sb.charAt((sb.length() - 1)) == ',') {
+            sb.setCharAt((sb.length() - 1), ']');
         } else {
             sb.append(']');
         }
@@ -79,9 +79,9 @@ public class Condition {
     @Override
     public int hashCode() {
         int result = 1;
-        result = ((result* 31)+((this.icon == null)? 0 :this.icon.hashCode()));
-        result = ((result* 31)+((this.text == null)? 0 :this.text.hashCode()));
-        result = ((result* 31)+((this.code == null)? 0 :this.code.hashCode()));
+        result = ((result * 31) + ((this.icon == null) ? 0 : this.icon.hashCode()));
+        result = ((result * 31) + ((this.text == null) ? 0 : this.text.hashCode()));
+        result = ((result * 31) + ((this.code == null) ? 0 : this.code.hashCode()));
         return result;
     }
 
@@ -94,7 +94,7 @@ public class Condition {
             return false;
         }
         Condition rhs = ((Condition) other);
-        return ((((this.icon == rhs.icon)||((this.icon!= null)&&this.icon.equals(rhs.icon)))&&((this.text == rhs.text)||((this.text!= null)&&this.text.equals(rhs.text))))&&((this.code == rhs.code)||((this.code!= null)&&this.code.equals(rhs.code))));
+        return ((((this.icon == rhs.icon) || ((this.icon != null) && this.icon.equals(rhs.icon))) && ((this.text == rhs.text) || ((this.text != null) && this.text.equals(rhs.text)))) && ((this.code == rhs.code) || ((this.code != null) && this.code.equals(rhs.code))));
     }
 
 }
