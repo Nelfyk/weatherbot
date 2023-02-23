@@ -1,7 +1,7 @@
 docker stop mysql
 docker rm mysql
 docker network create nelf-network
-docker run --name mysql --network=host -p 7777:3306 \
+docker run --name nelf_mysql --network=nelf-network -p 7777:3306 \
 -e MYSQL_ROOT_PASSWORD=bestuser \
 -e MYSQL_USER=bestuser \
 -e MYSQL_PASSWORD=bestuser \
