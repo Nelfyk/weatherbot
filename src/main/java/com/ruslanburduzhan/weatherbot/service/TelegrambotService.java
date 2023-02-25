@@ -137,10 +137,10 @@ public class TelegrambotService extends TelegramLongPollingBot {
     }
 
     private void saveUserRequestHistory(long chatId, String request) {
-        if (requestRepository.findByCity(request).isEmpty())
+        if (requestRepository.findByCityAndChatId(request, chatId).isEmpty())
             requestRepository.save(new Request(chatId, request, new Timestamp(System.currentTimeMillis())));
         else {
-            var req = requestRepository.findByCity(request).get();
+            var req = requestRepository.findByCityAndChatId(request, chatId).get();
             req.setRequestTime(new Timestamp(System.currentTimeMillis()));
             req.setCounter(req.getCounter() + 1);
             requestRepository.save(req);

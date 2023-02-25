@@ -11,7 +11,7 @@ public interface RequestRepository extends JpaRepository<Request, Integer> {
     @Query(value = "select * from requests where chat_id = :chatId order by request_time desc limit 10", nativeQuery = true)
     List<Request> findLastRequests(long chatId);
 
-    Optional<Request> findByCity(String city);
+    Optional<Request> findByCityAndChatId(String city, long chatId);
 
     List<Request> getAllByChatId(long chatId);
 
