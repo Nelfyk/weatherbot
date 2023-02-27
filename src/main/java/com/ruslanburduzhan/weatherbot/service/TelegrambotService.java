@@ -236,14 +236,6 @@ public class TelegrambotService extends TelegramLongPollingBot {
         if (weather.getError() == null) {
             var current = weather.getCurrent();
             var location = weather.getLocation();
-//            sendMessage(chatId, location.getName() +
-//                    " - " + location.getCountry() + "\n" +
-//                    "<strong>\n\uD83C\uDF21</strong> " + current.getTempC() + " °C" +
-//                    "<strong>\n:🤔</strong> " + current.getFeelslikeC() + " °C" +
-//                    "<strong>\n\uD83D\uDCA7</strong> " + current.getHumidity() + "%" +
-//                    "<strong>\n\uD83D\uDCA8</strong> " + current.getWindMps() + " м/c" +
-//                    "<strong>\n\uD83D\uDCC5</strong> " + location.getLocaltime().substring(0, 10) +
-//                    "<strong>\n⌚</strong> " + location.getLocaltime().substring(11));
             sendMessage(chatId, location.getName() +
                     " - " + location.getCountry() + "\n" +
                     "<strong>\n" + location.getLocaltime().substring(11) + " - " + current.getCondition().getText() + "</strong>" +

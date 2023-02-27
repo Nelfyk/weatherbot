@@ -1,3 +1,19 @@
+# Weatherbot.
+### Бот выдает погоду по запрошенному городу, так же хранит информацию о пользователе и его последних запросах.
+
+Backend разработан на java ☕️
+Стек:
+- Spring Boot
+- Spring Data
+- Maven
+- Api погоды - weatherapi.com
+- БД MySQL
+- Docker
+
+
+
+## Команды для докера:
+
 1. docker network create nelf-network
 2. docker run --name nelf_mysql --network=nelf-network -p 127.0.0.1:7777:3306 \
    -e MYSQL_ROOT_PASSWORD=bestuser \
