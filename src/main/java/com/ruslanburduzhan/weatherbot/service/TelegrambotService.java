@@ -223,7 +223,7 @@ public class TelegrambotService extends TelegramLongPollingBot {
         registerUser(msg);
         String name;
         if (msg.getChat().getLastName() == null) name = msg.getChat().getFirstName();
-        else name = msg.getChat().getFirstName() + msg.getChat().getLastName();
+        else name = msg.getChat().getFirstName() + " " + msg.getChat().getLastName();
         sendMessage(msg.getChatId(), "Привет " + name + "! \uD83D\uDE09\n" +
                 "Я WeatherBot, выдаю погоду по запрошенному городу \uD83E\uDD16\n" +
                 "Так же храню информацию по последним запросам \uD83D\uDC40\n" +
